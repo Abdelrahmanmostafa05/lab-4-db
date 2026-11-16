@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% from "_table.html" import render_table %}
+{% block content %}
+<section class="page-heading">
+  <span class="eyebrow">YOUR COLLECTION / MAKE IT YOURS</span>
+  <h1>Manage the library</h1>
+  <p>Add a new story to the shelves or update the details of a book or author.</p>
+</section>
+
+{% if error %}<p class="alert" role="alert">{{ error }}</p>{% endif %}
+{% if saved == "book" %}<p class="success-message" role="status">Book saved successfully.</p>{% endif %}
+{% if saved == "author" %}<p class="success-message" role="status">Author saved successfully.</p>{% endif %}
+{% if deleted == "book" %}<p class="success-message" role="status">Book and its loan records deleted.</p>{% endif %}
+{% if deleted == "author" %}<p class="success-message" role="status">Author, their books, and related loan records deleted.</p>{% endif %}
+{% if deleted == "category" %}<p class="success-message" role="status">Category deleted successfully.</p>{% endif %}
+
+<div class="manage-grid">
+  <section class="panel manage-card">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">01 / THE SHELVES</span>
+        <h2>{{ "Edit book" if book_draft.get("book_id") else "Add a book" }}</h2>
+      </div>
+      {% if book_draft.get("book_id") %}<a class="cancel-link" href="{{ url_for('manage') }}">Cancel edit</a>{% endif %}
+    </div>
+    <form class="manage-form" method="post" action="{{ url_for('save_book') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="book_id" value="{{ book_draft.get('book_id', '') }}">
+      <label>Book title
+        <input name="title" maxlength="150" required value="{{ book_draft.get('title', '') }}" placeholder="Enter the title">
+      </label>
+      <div class="form-row">
+        <label>Price
+          <input name="price" type="number" min="0" max="999999.99" step="0.01" required value="{{ book_draft.get('price', '') }}" placeholder="0.00">
+        </label>
+        <label>Publication year
+          <input name="publish_year" type="number" min="0" max="9999" value="{{ book_draft.get('publish_year', '') }}" placeholder="Optional">
+        </label>
+      </div>
+      <label>Author name
+        <input name="author_name" list="author-options" maxlength="100" required
+               value="{{ book_draft.get('author_name', '') }}"
+               placeholder="Choose an author or type a new name">
+        <datalist id="author-options">
+          {% for author in authors %}
+          <option value="{{ author.name }}">
+          {% endfor %}
+        </datalist>
+        <span class="field-help">Select a suggestion or type a new author name.</span>
+      </label>
+      <label>New author's country <span class="optional-label">Optional; used only for a new author</span>
+        <input name="author_country" maxlength="50" value="{{ book_draft.get('author_country', '') }}" placeholder="Country of origin">
+      </label>
+      <label>Publisher name
+        <input name="publisher_name" list="publisher-options" maxlength="100" required
+               value="{{ book_draft.get('publisher_name', '') }}"
+               placeholder="Choose a publisher or type a new name">
+        <datalist id="publisher-options">
+          {% for publisher in publishers %}
+          <option value="{{ publisher.name }}">
+          {% endfor %}
+        </datalist>
+        <span class="field-help">Select a suggestion or type a new publisher name.</span>
+      </label>
+      <label>New publisher's country <span class="optional-label">Optional; used only for a new publisher</span>
+        <input name="publisher_country" maxlength="50" value="{{ book_draft.get('publisher_country', '') }}" placeholder="Country">
+      </label>
+      <label>Category name
+        <input name="category_name" list="category-options" maxlength="50" required
+               value="{{ book_draft.get('category_name', '') }}"
+               placeholder="Choose a category or type a new name">
+        <datalist id="category-options">
+          {% for category in categories %}
+          <option value="{{ category.name }}">
+          {% endfor %}
+        </datalist>
+        <span class="field-help">Select a suggestion or type a new category name.</span>
+      </label>
+      <button class="button button-dark" type="submit">{{ "Save book changes" if book_draft.get("book_id") else "Add book" }} <span aria-hidden="true">→</span></button>
+    </form>
+  </section>
+
+  <section class="panel manage-card">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">02 / THE VOICES</span>
+        <h2>{{ "Edit author" if author_draft.get("author_id") else "Add an author" }}</h2>
+      </div>
+      {% if author_draft.get("author_id") %}<a class="cancel-link" href="{{ url_for('manage') }}">Cancel edit</a>{% endif %}
+    </div>
+    <form class="manage-form" method="post" action="{{ url_for('save_author') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="author_id" value="{{ author_draft.get('author_id', '') }}">
+      <label>Author name
+        <input name="name" maxlength="100" required value="{{ author_draft.get('name', '') }}" placeholder="Enter the author's name">
+      </label>
+      <label>Country <span class="optional-label">Optional</span>
+        <input name="country" maxlength="50" value="{{ author_draft.get('country', '') }}" placeholder="Country of origin">
+      </label>
+      <button class="button button-dark" type="submit">{{ "Save author changes" if author_draft.get("author_id") else "Add author" }} <span aria-hidden="true">→</span></button>
+    </form>
+  </section>
+</div>
+
+<section class="manage-list-section">
+  <div class="section-heading">
+    <div><span class="eyebrow">03 / IN YOUR COLLECTION</span><h2>Books on the shelves</h2></div>
+    <span class="result-count">{{ books|length }} books</span>
+  </div>
+  <div class="panel table-panel">
+    {% if books %}
+    <table>
+      <thead><tr><th>Title</th><th>Author</th><th>Price</th><th>Year</th><th>Publisher</th><th>Category</th><th></th></tr></thead>
+      <tbody>
+        {% for book in books %}
+        <tr>
+          <td>{{ book.title }}</td><td>{{ book.author }}</td><td>{{ book.price }}</td>
+          <td>{{ book.publish_year if book.publish_year is not none else "—" }}</td>
+          <td>{{ book.publisher }}</td><td>{{ book.category }}</td>
+          <td class="table-actions">
+            <a class="table-action" href="{{ url_for('manage', edit_book=book.book_id) }}">Edit</a>
+            <form class="delete-form" method="post" action="{{ url_for('delete_book', book_id=book.book_id) }}"
+                  data-confirm="Delete '{{ book.title }}'? This cannot be undone. Its loan records will also be deleted."
+                  onsubmit="return confirm(this.dataset.confirm)">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button class="danger-button" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="empty">No books yet. Add the first one above.</p>{% endif %}
+  </div>
+</section>
+
+<section class="manage-list-section">
+  <div class="section-heading">
+    <div><span class="eyebrow">04 / THE PEOPLE BEHIND THE PAGES</span><h2>Authors</h2></div>
+    <span class="result-count">{{ authors|length }} authors</span>
+  </div>
+  <div class="panel table-panel">
+    {% if authors %}
+    <table>
+      <thead><tr><th>Name</th><th>Country</th><th></th></tr></thead>
+      <tbody>
+        {% for author in authors %}
+        <tr>
+          <td>{{ author.name }}</td><td>{{ author.country or "—" }}</td>
+          <td class="table-actions">
+            <a class="table-action" href="{{ url_for('manage', edit_author=author.author_id) }}">Edit</a>
+            <form class="delete-form" method="post" action="{{ url_for('delete_author', author_id=author.author_id) }}"
+                  data-confirm="Delete '{{ author.name }}'? This cannot be undone. All their books and related loan records will also be deleted."
+                  onsubmit="return confirm(this.dataset.confirm)">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button class="danger-button" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="empty">No authors yet. Add the first one above.</p>{% endif %}
+  </div>
+</section>
+
+<section class="manage-list-section">
+  <div class="section-heading">
+    <div><span class="eyebrow">05 / THE SHELF LABELS</span><h2>Categories</h2></div>
+    <span class="result-count">{{ categories|length }} categories</span>
+  </div>
+  <div class="panel table-panel">
+    {% if categories %}
+    <table>
+      <thead><tr><th>Name</th><th>Books</th><th></th></tr></thead>
+      <tbody>
+        {% for category in categories %}
+        <tr>
+          <td>{{ category.name }}</td><td>{{ category.book_count }}</td>
+          <td class="table-actions">
+            {% if category.book_count %}
+            <span class="field-help">Reassign or delete its books before deleting</span>
+            {% else %}
+            <form class="delete-form" method="post" action="{{ url_for('delete_category', category_id=category.category_id) }}"
+                  data-confirm="Delete the category '{{ category.name }}'?"
+                  onsubmit="return confirm(this.dataset.confirm)">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button class="danger-button" type="submit">Delete</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="empty">No categories yet. Add one by creating a book.</p>{% endif %}
+  </div>
+</section>
+{% endblock %}

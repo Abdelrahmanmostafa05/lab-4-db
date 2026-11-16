@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from "_table.html" import render_table %}
+{% block content %}
+<section class="page-heading">
+  <span class="eyebrow">F2.5 / READERS' FAVORITES</span>
+  <h1>Most borrowed</h1>
+  <p>The books making their way from hand to hand, and the readers who can’t put them down.</p>
+</section>
+<div class="report-grid">
+  <section class="panel report-card"><div class="section-heading"><div><span class="eyebrow">TOP THREE</span><h2>Books in high demand</h2></div></div>{{ render_table(books) }}</section>
+  <section class="panel report-card"><div class="section-heading"><div><span class="eyebrow">READER SPOTLIGHT</span><h2>Most active member</h2></div></div>{{ render_table(members) }}</section>
+</div>
+{% endblock %}

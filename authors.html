@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "_table.html" import render_table %}
+{% block content %}
+<section class="page-heading">
+  <span class="eyebrow">F2.6 / THE PEOPLE BEHIND THE PAGES</span>
+  <h1>Authors &amp; their worlds</h1>
+  <p>Meet the voices on our shelves and discover where their stories connect.</p>
+  <a class="button button-dark page-action" href="{{ url_for('manage') }}">Add or edit authors <span aria-hidden="true">→</span></a>
+</section>
+<div class="report-grid">
+  <section class="panel report-card"><div class="section-heading"><div><span class="eyebrow">01 / OUR AUTHORS</span><h2>Books by author</h2></div></div>{{ render_table(author_counts) }}</section>
+  <section class="panel report-card"><div class="section-heading"><div><span class="eyebrow">02 / SHARED ROOTS</span><h2>Author &amp; publisher</h2></div></div>{{ render_table(matching_countries) }}</section>
+</div>
+{% endblock %}

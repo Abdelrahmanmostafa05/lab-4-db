@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="error-card">
+  <span class="error-mark" aria-hidden="true">!</span>
+  <span class="eyebrow">A QUICK CHECK-IN</span>
+  <h1>We can’t reach the library database.</h1>
+  <p>The website is running, but it couldn’t retrieve the books right now. Check that MySQL Server is running, that <code>problem2_DDL.sql</code> and <code>problem2_DML.sql</code> have been executed in Workbench, and that the <code>DB_HOST</code>, <code>DB_USER</code>, <code>DB_PASS</code>, and <code>DB_NAME</code> settings are correct.</p>
+  <a class="button button-dark" href="{{ url_for('index') }}">Back to home <span aria-hidden="true">→</span></a>
+</section>
+{% endblock %}

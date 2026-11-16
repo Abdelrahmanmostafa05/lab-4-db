@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% from "_table.html" import render_table %}
+{% block content %}
+<section class="page-heading">
+  <span class="eyebrow">F2.2 / TAKE A LOOK AROUND</span>
+  <h1>The catalogue</h1>
+  <p>Every story has a place on these shelves. Find yours.</p>
+  <a class="button button-dark page-action" href="{{ url_for('manage') }}">Add or edit books <span aria-hidden="true">→</span></a>
+</section>
+<section class="panel table-panel">{{ render_table(rows) }}</section>
+{% endblock %}

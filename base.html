@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="{{ url_for('index') }}" aria-label="The Reading Room home">
+      <span class="brand-mark" aria-hidden="true">R</span>
+      <span class="brand-copy"><strong>The Reading Room</strong><small>Library collection</small></span>
+    </a>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a class="{{ 'active' if request.endpoint == 'index' else '' }}" href="{{ url_for('index') }}">Home</a>
+      <a class="{{ 'active' if request.endpoint == 'search' else '' }}" href="{{ url_for('search') }}">Search</a>
+      <a class="{{ 'active' if request.endpoint == 'catalogue' else '' }}" href="{{ url_for('catalogue') }}">Catalogue</a>
+      <a class="{{ 'active' if request.endpoint == 'reports' else '' }}" href="{{ url_for('reports') }}">Reports</a>
+      <a class="{{ 'active' if request.endpoint == 'loans' else '' }}" href="{{ url_for('loans') }}">Loans</a>
+      <a class="{{ 'active' if request.endpoint == 'most_borrowed' else '' }}" href="{{ url_for('most_borrowed') }}">Most borrowed</a>
+      <a class="{{ 'active' if request.endpoint == 'authors' else '' }}" href="{{ url_for('authors') }}">Authors</a>
+      <a class="{{ 'active' if request.endpoint in ['manage', 'save_book', 'save_author'] else '' }}" href="{{ url_for('manage') }}">Manage</a>
+    </nav>
+  </div>
+</header>
+<main class="page-shell">
+  {% block content %}{% endblock %}
+</main>
+<footer class="site-footer">
+  <span>The Reading Room</span><span>Discover your next favorite.</span>
+</footer>
+</body>
+</html>

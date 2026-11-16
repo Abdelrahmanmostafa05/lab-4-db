@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "_table.html" import render_table %}
+{% block content %}
+<section class="page-heading">
+  <span class="eyebrow">F2.4 / KEEPING THINGS IN ORDER</span>
+  <h1>On loan &amp; on the shelf</h1>
+  <p>See what’s out in the world and what’s still waiting to be discovered.</p>
+</section>
+<div class="report-grid">
+  <section class="panel report-card report-wide"><div class="section-heading"><div><span class="eyebrow">01 / CURRENTLY READING</span><h2>Loans not yet returned</h2></div><span class="result-count">{{ open_loans|length }} active</span></div>{{ render_table(open_loans) }}</section>
+  <section class="panel report-card"><div class="section-heading"><div><span class="eyebrow">02 / NEW READERS</span><h2>Members without loans</h2></div></div>{{ render_table(members_without_loans) }}</section>
+  <section class="panel report-card"><div class="section-heading"><div><span class="eyebrow">03 / STILL WAITING</span><h2>Books never borrowed</h2></div></div>{{ render_table(books_without_loans) }}</section>
+</div>
+{% endblock %}

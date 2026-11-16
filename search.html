@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_table.html" import render_table %}
+{% block content %}
+<section class="page-heading">
+  <span class="eyebrow">F2.1 / FIND SOMETHING GOOD</span>
+  <h1>Search the shelves</h1>
+  <p>Follow a clue, set a price, or browse a favorite category.</p>
+</section>
+<section class="panel">
+  <form method="get" class="filter-form">
+    <label>Title keyword<input name="keyword" value="{{ keyword }}" placeholder="Try “1984” or “Palace”"></label>
+    <label>Minimum price<input name="min" type="number" min="0" step="0.01" value="{{ minimum }}" placeholder="0.00"></label>
+    <label>Maximum price<input name="max" type="number" min="0" step="0.01" value="{{ maximum }}" placeholder="Any"></label>
+    <label>Category
+      <select name="category">
+        <option value="">All categories</option>
+        {% for category in categories %}
+        <option value="{{ category.category_id }}"
+          {% if selected_category == category.category_id|string %}selected{% endif %}>
+          {{ category.name }}
+        </option>
+        {% endfor %}
+      </select>
+    </label>
+    <button class="button button-dark" type="submit">Search books <span aria-hidden="true">→</span></button>
+  </form>
+</section>
+{% if search_error %}<p class="alert" role="alert">{{ search_error }}</p>{% endif %}
+<section class="results-section">
+  <div class="section-heading"><div><span class="eyebrow">THE SHELVES</span><h2>Matching books</h2></div><span class="result-count">{{ rows|length }} found</span></div>
+  <div class="panel table-panel">{{ render_table(rows) }}</div>
+</section>
+{% endblock %}
